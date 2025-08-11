@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "L'ANAC autorise l'entreprise ZIPLINE a distribuer des médicaments par aéronefs télépilotés",
+    "category": "Actualités Drones",
+    "date": "2024-01-15",
+    "description": "L'Autorité Nationale de l'Aviation Civile de Côte d'Ivoire accorde une autorisation spéciale à ZIPLINE pour la distribution de médicaments par drones dans les zones reculées.",
+    "status": "active"
+  },
+  {
+    "id": 2,
+    "title": "L'ANAC lance un programme de formation pour les pilotes de drones commerciaux",
+    "category": "Actualités Drones",
+    "date": "2024-01-12",
+    "description": "Nouveau programme de certification pour les opérateurs de drones commerciaux avec des standards de sécurité renforcés.",
+    "status": "active"
+  },
+  {
+    "id": 3,
+    "title": "L'ANAC approuve l'utilisation de drones pour la surveillance des infrastructures critiques",
+    "category": "Actualités Drones",
+    "date": "2024-01-10",
+    "description": "Autorisation accordée pour la surveillance aérienne des infrastructures énergétiques et de transport par drones équipés de caméras thermiques.",
+    "status": "active"
+  },
+  {
+    "id": 4,
+    "title": "L'ANAC et la police nationale signent un partenariat pour la sécurité aérienne",
+    "category": "Actualités Drones",
+    "date": "2024-01-08",
+    "description": "Collaboration renforcée entre l'ANAC et les forces de l'ordre pour la prévention et la détection des violations de l'espace aérien.",
+    "status": "active"
+  },
+  {
+    "id": 5,
+    "title": "L'ANAC autorise les livraisons par drones dans la zone économique spéciale d'Abidjan",
+    "category": "Actualités Drones",
+    "date": "2024-01-05",
+    "description": "Extension des autorisations de livraison par drones dans la zone portuaire et industrielle d'Abidjan pour améliorer l'efficacité logistique.",
+    "status": "active"
+  },
+  {
+    "id": 6,
+    "title": "L'ANAC met en place un système de géofencing pour les zones sensibles",
+    "category": "Actualités Drones",
+    "description": "Nouvelle technologie de restriction géographique pour empêcher les drones d'accéder aux zones aéroportuaires et militaires sensibles.",
+    "date": "2024-01-03",
+    "status": "active"
+  }
+]

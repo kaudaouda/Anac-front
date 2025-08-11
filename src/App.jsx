@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import './App.css'
 import SubNav from './components/SubNav'
+import NewsInfo from './components/NewsInfo'
 
 function App() {
 
   return (
     <>
       <SubNav />
-      <div className="pt-16">
-        {/* Votre contenu principal ira ici */}
-      </div>
+      <NewsInfo />
     </>
   )
 }
