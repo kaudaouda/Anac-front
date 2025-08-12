@@ -1,0 +1,67 @@
+{
+  "menuItems": [
+    {
+      "id": "home",
+      "label": " ",
+      "icon": "Home",
+      "href": "/",
+      "order": 1
+    },
+    {
+      "id": "reglementation",
+      "label": "Règlementation",
+      "icon": null,
+      "href": "/reglementation",
+      "order": 2
+    },
+    {
+      "id": "carte-drone",
+      "label": "Carte drône",
+      "icon": null,
+      "href": "/carte-drone",
+      "order": 3
+    },
+    {
+      "id": "notifications",
+      "label": "Notification d'évènements",
+      "icon": null,
+      "href": "/notifications",
+      "order": 4
+    },
+    {
+      "id": "actualites",
+      "label": "Actualités",
+      "icon": null,
+      "href": "/actualites",
+      "order": 5
+    },
+    {
+      "id": "faq",
+      "label": "F.A.Q.",
+      "icon": null,
+      "href": "/faq",
+      "order": 6
+    },
+    {
+      "id": "connexion",
+      "label": "Se connecter",
+      "icon": null,
+      "href": "/connexion",
+      "order": 7
+    }
+  ],
+  "brand": {
+    "name": "ANAC",
+    "fullName": "Agence Nationale de l'Aviation Civile",
+    "logo": {
+      "backgroundColor": "bg-blue-600",
+      "textColor": "text-white",
+      "size": "w-8 h-8"
+    }
+  },
+  "styling": {
+    "navClasses": "bg-white shadow-sm border-b border-gray-100",
+    "menuItemClasses": "flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 group",
+    "mobileMenuItemClasses": "flex items-center space-x-3 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-200"
+  }
+}
