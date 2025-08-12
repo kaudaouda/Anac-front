@@ -1,0 +1,26 @@
+{
+  "title": "Questions Fréquentes",
+  "subtitle": "Retrouvez les réponses aux questions les plus courantes sur la plateforme DiGIDRONE et la réglementation des drones civils.",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Qu'est-ce que DiGIDRONE ?",
+      "answer": "DiGIDRONE est la plateforme électronique de gestion des aéronefs télépilotés (drônes) civiles de l'Autorité Nationale de l'Aviation Civile (ANAC) de Côte d'Ivoire. Elle permet la gestion centralisée et sécurisée de tous les aspects liés aux drones civils."
+    },
+    {
+      "id": 2,
+      "question": "Comment s'inscrire sur la plateforme ?",
+      "answer": "Pour vous inscrire, cliquez sur le bouton 'S'inscrire ?' dans le header principal. Vous devrez fournir vos informations personnelles, justifier de votre identité et accepter les conditions d'utilisation de la plateforme."
+    },
+    {
+      "id": 3,
+      "question": "Quels sont les types de drones autorisés ?",
+      "answer": "La plateforme gère tous les types de drones civils : drones de loisir, drones professionnels, drones de surveillance, drones agricoles, etc. Chaque type est soumis à des réglementations spécifiques selon son usage et sa catégorie."
+    },
+    {
+      "id": 4,
+      "question": "Quelles sont les procédures de déclaration ?",
+      "answer": "Tous les drones civils doivent être déclarés sur la plateforme avant leur premier vol. Cela inclut l'enregistrement du drone, la déclaration des vols, et le respect des zones de vol autorisées définies par l'ANAC."
+    }
+  ]
+}

@@ -28,7 +28,7 @@ const Header = () => {
           <h1 className="text-6xl font-bold text-blue-900 tracking-wider drop-shadow-lg font-orbitron">
             DIGIDRONE
           </h1>
-          <p className="text-gray-700 text-md font-semibold text-center leading-relaxed max-w-md">
+          <p className="text-gray-700 text-sm font-semibold text-center leading-relaxed max-w-md">
             Plateforme électronique de gestion des aéronefs télépilotés
           </p>
         </div>
