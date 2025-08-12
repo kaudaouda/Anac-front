@@ -46,7 +46,7 @@
       "id": "connexion",
       "label": "Se connecter",
       "icon": null,
-      "href": "/connexion",
+      "href": "/login",
       "order": 7
     }
   ],
