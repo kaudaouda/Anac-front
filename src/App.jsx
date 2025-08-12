@@ -4,7 +4,7 @@ import Header from './components/Header'
 import SubNav from './components/SubNav'
 import NewsInfo from './components/NewsInfo'
 import Menu from './components/Menu'
-
+import BigHeader from './components/BigHeader'
 function App() {
 
   return (
@@ -13,6 +13,7 @@ function App() {
       <NewsInfo />
       <Header />
       <Menu />
+      <BigHeader />
     </>
   )
 }
