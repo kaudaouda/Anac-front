@@ -1,0 +1,194 @@
+/* Styles personnalisés pour la carte Leaflet */
+
+.custom-tooltip {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #3B82F6;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.custom-tooltip::before {
+  border-top-color: #3B82F6;
+}
+
+/* Amélioration des contrôles de la carte */
+.leaflet-control-zoom {
+  border: 2px solid #E5E7EB;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-control-zoom a {
+  background: white;
+  color: #374151;
+  border: 1px solid #E5E7EB;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #F3F4F6;
+  color: #1F2937;
+  border-color: #D1D5DB;
+}
+
+.leaflet-control-zoom a:active {
+  background: #E5E7EB;
+}
+
+/* Amélioration des popups */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+  margin: 16px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.leaflet-popup-tip {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Animation des marqueurs au survol */
+.leaflet-interactive {
+  transition: all 0.3s ease;
+}
+
+.leaflet-interactive:hover {
+  filter: brightness(1.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .leaflet-control-zoom {
+    transform: scale(0.9);
+  }
+  
+  .custom-tooltip {
+    font-size: 12px;
+    max-width: 200px;
+  }
+}
+
+/* Amélioration de l'accessibilité */
+.leaflet-control-zoom a:focus {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
+
+/* Styles pour les marqueurs sélectionnés */
+.leaflet-interactive.selected {
+  stroke: #10B981;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
+}
+
+/* Styles pour les délimitations des réserves et parcs - Frontières fluides comme les pays */
+.zigzag-border {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.zigzag-border.natural-reserve {
+  stroke: #F97316;
+  stroke-width: 2.5;
+  opacity: 0.9;
+}
+
+.zigzag-border.national-park {
+  stroke: #DC2626;
+  stroke-width: 2.5;
+  opacity: 0.9;
+}
+
+/* Hover effects pour les délimitations */
+.zigzag-border:hover {
+  stroke-width: 3.5;
+  filter: drop-shadow(0 0 3px currentColor);
+  opacity: 1;
+}
+
+/* Animation des délimitations */
+@keyframes zigzag-animation {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -12;
+  }
+}
+
+.zigzag-border {
+  animation: zigzag-animation 2s linear infinite;
+}
+
+/* Styles pour les fonds transparents */
+.leaflet-pane > svg path.leaflet-interactive {
+  transition: all 0.3s ease;
+}
+
+/* Hover effects pour les fonds transparents */
+.leaflet-pane > svg path.leaflet-interactive:hover {
+  fill-opacity: 0.2;
+  filter: drop-shadow(0 0 2px currentColor);
+}
+
+/* Styles spécifiques pour les polylines interactives */
+.leaflet-pane > svg path.leaflet-interactive.zigzag-border {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.leaflet-pane > svg path.leaflet-interactive.zigzag-border.natural-reserve {
+  stroke: #F97316;
+  stroke-width: 2.5;
+}
+
+.leaflet-pane > svg path.leaflet-interactive.zigzag-border.national-park {
+  stroke: #DC2626;
+  stroke-width: 2.5;
+}
+
+/* Styles pour les tooltips personnalisés */
+.custom-tooltip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 2px solid #1f2937 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  padding: 12px !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  min-width: 200px !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.custom-tooltip::before {
+  border-top-color: #1f2937 !important;
+}
+
+/* Animation d'apparition des tooltips */
+.leaflet-tooltip {
+  animation: tooltip-fade-in 0.2s ease-out;
+}
+
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover effects pour les zones avec tooltips */
+.leaflet-pane > svg path.leaflet-interactive:hover {
+  fill-opacity: 0.2;
+  filter: drop-shadow(0 0 2px currentColor);
+  cursor: pointer;
+}
