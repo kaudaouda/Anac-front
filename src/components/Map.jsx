@@ -31,7 +31,6 @@ const Map = () => {
 
   return (
     <div className="w-full">
-      {/* Carte Leaflet */}
       <div className="w-full">
         <MapContainer
           center={[6.5244, -5.9500]} // Centre de la Côte d'Ivoire
@@ -47,13 +46,11 @@ const Map = () => {
           dragging={true}
           tap={false}
         >
-          {/* Fond de carte OpenStreetMap */}
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {/* Aéroports - Cercles bleus */}
           {airports.map((airport) => (
             <CircleMarker
               key={airport.id}
@@ -79,7 +76,6 @@ const Map = () => {
             </CircleMarker>
           ))}
 
-          {/* Aérodromes - Cercles bleus plus petits */}
           {aerodromes.map((aerodrome) => (
             <CircleMarker
               key={aerodrome.id}
@@ -105,10 +101,8 @@ const Map = () => {
             </CircleMarker>
           ))}
 
-          {/* Réserves naturelles - Lignes orange en zigzag */}
           {naturalReserves.map((reserve) => (
             <React.Fragment key={reserve.id}>
-              {/* Fond transparent orange */}
               <Polygon
                 positions={reserve.coordinates}
                 pathOptions={{
@@ -131,7 +125,6 @@ const Map = () => {
       </div>
                 </Tooltip>
               </Polygon>
-              {/* Bordure orange */}
               <Polyline
                 positions={reserve.coordinates}
                 pathOptions={{
@@ -143,10 +136,8 @@ const Map = () => {
             </React.Fragment>
           ))}
 
-          {/* Parcs nationaux - Lignes rouges en zigzag */}
           {nationalParks.map((park) => (
             <React.Fragment key={park.id}>
-              {/* Fond transparent rouge */}
               <Polygon
                 positions={park.coordinates}
                 pathOptions={{
@@ -169,7 +160,6 @@ const Map = () => {
                 </div>
                 </Tooltip>
               </Polygon>
-              {/* Bordure rouge */}
               <Polyline
                 positions={park.coordinates}
                 pathOptions={{
