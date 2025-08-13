@@ -22,8 +22,7 @@ const SignupPage = () => {
       ...prev,
       [name]: value
     }));
-    
-    // Effacer l'erreur du champ modifié
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -78,11 +77,9 @@ const SignupPage = () => {
 
     setIsLoading(true);
     
-    // Simulation d'une requête API
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Tentative d\'inscription avec:', formData);
-      // Ici vous ajouteriez votre logique d'inscription
     } catch (error) {
       console.error('Erreur d\'inscription:', error);
     } finally {
@@ -93,7 +90,6 @@ const SignupPage = () => {
   return (
     <div className="bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        {/* Header */}
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
             Créer votre compte
@@ -106,10 +102,8 @@ const SignupPage = () => {
           </p>
         </div>
 
-        {/* Formulaire */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            {/* Prénom et Nom */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="relative">
@@ -160,7 +154,6 @@ const SignupPage = () => {
               </div>
             </div>
 
-            {/* Email */}
             <div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -185,7 +178,6 @@ const SignupPage = () => {
               )}
             </div>
 
-            {/* Téléphone */}
             <div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -210,7 +202,6 @@ const SignupPage = () => {
               )}
             </div>
 
-            {/* Mot de passe */}
             <div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -246,7 +237,6 @@ const SignupPage = () => {
               )}
             </div>
 
-            {/* Confirmation du mot de passe */}
             <div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -283,7 +273,6 @@ const SignupPage = () => {
             </div>
           </div>
 
-          {/* Conditions d'utilisation */}
           <div className="flex items-center">
             <input
               id="terms"
@@ -304,7 +293,6 @@ const SignupPage = () => {
             </label>
           </div>
 
-          {/* Bouton d'inscription */}
           <div>
             <button
               type="submit"

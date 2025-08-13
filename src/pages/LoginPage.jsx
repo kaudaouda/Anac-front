@@ -22,11 +22,10 @@ const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulation d'une requête API
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Tentative de connexion avec:', formData);
-      // Ici vous ajouteriez votre logique d'authentification
+
     } catch (error) {
       console.error('Erreur de connexion:', error);
     } finally {
@@ -37,7 +36,7 @@ const LoginPage = () => {
   return (
     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        {/* Header */}
+
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
             Connexion à votre compte
@@ -50,10 +49,10 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Formulaire */}
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            {/* Email */}
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Email className="h-5 w-5 text-gray-500" />
@@ -71,7 +70,7 @@ const LoginPage = () => {
               />
             </div>
 
-            {/* Mot de passe */}
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Lock className="h-5 w-5 text-gray-500" />

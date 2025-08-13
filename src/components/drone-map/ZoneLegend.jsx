@@ -8,7 +8,6 @@ const ZoneLegend = () => {
       </h3>
       
       <div className="space-y-4">
-        {/* Aéroports */}
         <div className="flex items-start space-x-3">
           <div className="w-4 h-4 bg-blue-600 rounded-full mt-1 flex-shrink-0"></div>
           <div>
@@ -19,7 +18,6 @@ const ZoneLegend = () => {
           </div>
         </div>
 
-        {/* Aérodromes */}
         <div className="flex items-start space-x-3">
           <div className="w-3 h-3 bg-blue-400 rounded-full mt-1 flex-shrink-0"></div>
           <div>
@@ -30,7 +28,6 @@ const ZoneLegend = () => {
           </div>
         </div>
 
-        {/* Réserves Naturelles */}
         <div className="flex items-start space-x-3">
           <div className="w-4 h-4 bg-orange-500 rounded-full mt-1 flex-shrink-0"></div>
           <div>
@@ -41,7 +38,7 @@ const ZoneLegend = () => {
           </div>
         </div>
 
-        {/* Parcs Nationaux */}
+
         <div className="flex items-start space-x-3">
           <div className="w-4 h-4 bg-red-600 rounded-full mt-1 flex-shrink-0"></div>
           <div>

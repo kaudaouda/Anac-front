@@ -15,7 +15,6 @@ const ContactPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Informations de contact */}
         <div className="space-y-8">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">
             Informations de contact
@@ -59,7 +58,6 @@ const ContactPage = () => {
           </div>
         </div>
 
-        {/* Formulaire de contact */}
         <div className="bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">
             Envoyez-nous un message

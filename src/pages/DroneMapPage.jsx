@@ -20,13 +20,10 @@ const DroneMapPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* En-tête de la page */}
       <DroneMapHeader />
       
-      {/* Contenu principal */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="w-full">
-          {/* Carte principale */}
           <DroneMap
             airports={airports}
             aerodromes={aerodromes}

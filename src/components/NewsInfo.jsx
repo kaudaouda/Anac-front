@@ -17,20 +17,16 @@ const NewsInfo = () => {
 
   useEffect(() => {
     const animationSequence = () => {
-      // Phase 1: Le texte entre depuis la droite
       setAnimationPhase('enter');
       
-      // Phase 2: Après 1 seconde, le texte est au centre
       setTimeout(() => {
         setAnimationPhase('center');
       }, 1000);
       
-      // Phase 3: Après 3 secondes, le texte sort vers la gauche
       setTimeout(() => {
         setAnimationPhase('exit');
       }, 4000);
       
-      // Phase 4: Après 1 seconde, on change de nouvelle
       setTimeout(() => {
         setIsTransitioning(true);
         setTimeout(() => {
@@ -51,14 +47,12 @@ const NewsInfo = () => {
 
   return (
     <div className="bg-blue-900 text-white py-1 px-6 w-screen flex items-center justify-between space-x-1 shadow-inner shadow-lg">
-      {/* Section gauche - Label catégorie */}
       <div>
         <span className="text-white font-bold text-xs uppercase tracking-wide">
           {currentNews.category}
         </span>
       </div>
 
-      {/* Section centrale - Titre de la nouvelle avec effet ticker */}
       <div className="flex-1 relative">
         <div className="bg-white text-black px-4 py-0.5 rounded-full shadow-[inset_0_4px_8px_rgba(0,0,0,0.3)] relative overflow-hidden">
           <div 
