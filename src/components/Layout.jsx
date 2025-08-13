@@ -3,6 +3,7 @@ import SubNav from './SubNav';
 import NewsInfo from './NewsInfo';
 import Header from './Header';
 import Menu from './Menu';
+import Footer from './Footer';
 
 const Layout = ({ children }) => {
   return (
@@ -15,6 +16,7 @@ const Layout = ({ children }) => {
       <main className="flex-1">
         {children}
       </main>
+      <Footer />
     </div>
   );
 };

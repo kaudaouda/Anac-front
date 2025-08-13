@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
+import DroneMapPage from './pages/DroneMapPage'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/carte-drone" element={<DroneMapPage />} />
         </Routes>
       </Layout>
     </Router>
