@@ -2,7 +2,7 @@
   "menuItems": [
     {
       "id": "home",
-      "label": " ",
+      "label": "Accueil",
       "icon": "Home",
       "href": "/",
       "order": 1

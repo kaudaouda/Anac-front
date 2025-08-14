@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff, Email, Lock, Person, Phone } from '@mui/icons-material';
+import { useAuth } from '../contexts/AuthContext';
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+  const { register, isAuthenticated, error, clearError } = useAuth();
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -68,6 +72,19 @@ const SignupPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      clearError();
+    }
+  }, [formData, error, clearError]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -76,12 +93,24 @@ const SignupPage = () => {
     }
 
     setIsLoading(true);
+    setErrors({});
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Tentative d\'inscription avec:', formData);
+      // transform data to match the expected format by the backend
+      const backendData = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        confirm_password: formData.confirmPassword
+      };
+      
+      await register(backendData);
+      navigate('/');
     } catch (error) {
       console.error('Erreur d\'inscription:', error);
+
     } finally {
       setIsLoading(false);
     }
@@ -101,6 +130,12 @@ const SignupPage = () => {
             </Link>
           </p>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
