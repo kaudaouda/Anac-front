@@ -1,10 +1,9 @@
 import React from 'react';
-import droneImage from '../assets/images/drones-iLJvTphP.png';
+
 
 const BigHeader = () => {
   return (
-    <div className="relative w-full h-screen bg-cover bg-center bg-no-repeat overflow-hidden" 
-      style={{ backgroundImage: `url(${droneImage})` }}>
+    <div className="relative w-full h-screen overflow-hidden">
       <div className="relative z-10 flex items-center h-full">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="max-w-3/6 bg-black/70 rounded-xl p-5">
@@ -28,7 +27,7 @@ const BigHeader = () => {
       </div>
       
 
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/30 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/30 to-transparent z-20"></div>
     </div>
   );
 };
