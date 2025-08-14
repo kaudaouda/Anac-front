@@ -3,14 +3,15 @@ import backgroundImage from '../assets/images/fond-formes-geometriques-bleu-abst
 import logo from '../assets/logo/logo.png';
 import drone from '../assets/images/drone.png';
 
+
 const Header = () => {
   return (
     <header className="relative w-full bg-white overflow-hidden">
       <div className="absolute inset-0">
-        <img src={backgroundImage} className="w-full h- object-cover" />
+        <img src={backgroundImage} className="w-full h-full object-cover" />
       </div>
-
       <div className="relative z-10 flex items-center justify-between py-10">
+        
         <div className="flex flex-col items-center space-y-4 flex-1">
           <div className="text-blue-900 font-semibold text-sm uppercase text-center">
             <p>Ministère des Transports</p>
