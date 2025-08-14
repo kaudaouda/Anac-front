@@ -5,6 +5,24 @@ class ApiService {
     this.baseURL = API_BASE_URL;
   }
 
+  // Liste des endpoints qui ne nécessitent pas d'authentification
+  get publicEndpoints() {
+    return [
+      '/auth/login/',
+      '/auth/register/',
+      '/auth/password-reset/',
+      '/auth/refresh-token/',
+      '/auth/check-auth/'
+    ];
+  }
+
+  // Vérifier si un endpoint est public (ne nécessite pas d'authentification)
+  isPublicEndpoint(endpoint) {
+    return this.publicEndpoints.some(publicEndpoint => 
+      endpoint.endsWith(publicEndpoint)
+    );
+  }
+
   // generic method for http calls
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
@@ -17,10 +35,12 @@ class ApiService {
       ...options,
     };
 
-    // add authentication token if available
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // add authentication token only if endpoint is not public
+    if (!this.isPublicEndpoint(endpoint)) {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     try {

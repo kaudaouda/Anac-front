@@ -11,6 +11,9 @@ import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import Faq from './pages/Faq'
 import DroneMapPage from './pages/DroneMapPage'
+import DashboardPage from './pages/DashboardPage'
+import DroneManagementPage from './pages/DroneManagementPage'
+import DroneFlightPage from './pages/DroneFlightPage'
 
 function App() {
   return (
@@ -21,9 +24,24 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
             <Route path="/profile" element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/drones" element={
+              <ProtectedRoute>
+                <DroneManagementPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/flights" element={
+              <ProtectedRoute>
+                <DroneFlightPage />
               </ProtectedRoute>
             } />
             <Route path="/about" element={<AboutPage />} />

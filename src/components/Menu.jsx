@@ -81,12 +81,51 @@ const Menu = () => {
 
                 {/* Menu déroulant */}
                 <div 
-                  className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-200 ${
+                  className={`absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-200 ${
                     isProfileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
                   }`}
                   onMouseEnter={() => setIsProfileMenuOpen(true)}
                   onMouseLeave={() => setIsProfileMenuOpen(false)}
                 >
+                  {/* Tableau de bord */}
+                  <a
+                    href="/dashboard"
+                    onClick={handleProfileClick}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <span className="material-icons text-lg">dashboard</span>
+                      <span>Tableau de Bord</span>
+                    </div>
+                  </a>
+
+                  {/* Gestion des drones */}
+                  <a
+                    href="/drones"
+                    onClick={handleProfileClick}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <span className="material-icons text-lg">flight</span>
+                      <span>Mes Drones</span>
+                    </div>
+                  </a>
+
+                  {/* Journal de vols */}
+                  <a
+                    href="/flights"
+                    onClick={handleProfileClick}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <span className="material-icons text-lg">history</span>
+                      <span>Journal de Vols</span>
+                    </div>
+                  </a>
+
+                  <div className="border-t border-gray-100 my-1"></div>
+
+                  {/* Mon profil */}
                   <a
                     href="/profile"
                     onClick={handleProfileClick}
@@ -98,6 +137,7 @@ const Menu = () => {
                     </div>
                   </a>
                   
+                  {/* Déconnexion */}
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
