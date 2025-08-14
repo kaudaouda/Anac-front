@@ -1,10 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import backgroundImage from '../assets/images/fond-formes-geometriques-bleu-abstrait-COS2Lu06.jpg';
 import logo from '../assets/logo/logo.png';
 import drone from '../assets/images/drone.png';
-
+import carouselService from '../services/carouselService';
 
 const Header = () => {
+  const [carouselImages, setCarouselImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCarouselImages = async () => {
+      try {
+        const images = await carouselService.getCarouselImages();
+        if (images && images.length > 0) {
+          setCarouselImages(images);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des images du carrousel:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCarouselImages();
+  }, []);
+
+  useEffect(() => {
+    if (carouselImages.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % carouselImages.length
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [carouselImages.length]);
+
+
+  const getCurrentImage = () => {
+    if (carouselImages.length > 0 && carouselImages[currentImageIndex]) {
+      return carouselImages[currentImageIndex].image_url;
+    }
+    return drone; 
+  };
+
   return (
     <header className="relative w-full bg-white overflow-hidden">
       <div className="absolute inset-0">
@@ -37,7 +78,14 @@ const Header = () => {
         <div className="flex justify-center flex-1 w-full relative">
           <div className="drone-pulse-ring drone-pulse-ring-1 w-40 h-40"></div>
           <div className="drone-pulse-ring drone-pulse-ring-2 w-40 h-40"></div>
-          <img src={drone} className="w-2/3 drone-flying relative z-10" alt="Drone" />
+          
+          <img 
+            src={getCurrentImage()} 
+            className="w-2/3 drone-flying relative z-10 transition-opacity duration-1000" 
+            alt={carouselImages[currentImageIndex]?.title || "Drone"}
+          />
+          
+
         </div>
       </div>
     </header>

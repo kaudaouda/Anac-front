@@ -5,18 +5,19 @@ class ApiService {
     this.baseURL = API_BASE_URL;
   }
 
-  // Liste des endpoints qui ne nécessitent pas d'authentification
+
   get publicEndpoints() {
     return [
       '/auth/login/',
       '/auth/register/',
       '/auth/password-reset/',
       '/auth/refresh-token/',
-      '/auth/check-auth/'
+      '/auth/check-auth/',
+      '/auth/carousel/'
     ];
   }
 
-  // Vérifier si un endpoint est public (ne nécessite pas d'authentification)
+
   isPublicEndpoint(endpoint) {
     return this.publicEndpoints.some(publicEndpoint => 
       endpoint.endsWith(publicEndpoint)
