@@ -8,15 +8,8 @@ class CarouselService {
       const response = await apiService.get('/auth/carousel/');
       const images = response.images || [];
       
-      console.log('Images reçues du backend:', images);
-      
-
       const processedImages = images.map(image => {
-        const originalUrl = image.image_url;
         const processedUrl = buildImageUrl(image.image_url);
-        console.log(`Image: ${image.title || 'Sans titre'}`);
-        console.log(`  URL originale: ${originalUrl}`);
-        console.log(`  URL traitée: ${processedUrl}`);
         
         return {
           ...image,
@@ -24,15 +17,41 @@ class CarouselService {
         };
       });
       
-      console.log('Images traitées:', processedImages);
       return processedImages;
-    } catch (error) {
-      console.error('Erreur lors de la récupération des images de carrousel:', error);
       
-      return [];
+    } catch (error) {
+      return this.getDefaultImages();
     }
   }
 
+  getDefaultImages() {
+    return [
+      {
+        id: 'default-1',
+        title: 'Drone 1',
+        description: 'Image par défaut',
+        image_url: '/src/assets/images/d2-Drx4MZxP.png',
+        order: 0,
+        is_active: true
+      },
+      {
+        id: 'default-2',
+        title: 'Drone 2',
+        description: 'Image par défaut',
+        image_url: '/src/assets/images/d4-jJhHUjr-.png',
+        order: 1,
+        is_active: true
+      },
+      {
+        id: 'default-3',
+        title: 'Drone 3',
+        description: 'Image par défaut',
+        image_url: '/src/assets/images/d5-BAxVu4DM.png',
+        order: 2,
+        is_active: true
+      }
+    ];
+  }
 
   async getCarouselImage(id) {
     try {
@@ -42,11 +61,9 @@ class CarouselService {
       }
       return response;
     } catch (error) {
-      console.error(`Erreur lors de la récupération de l'image ${id}:`, error);
       return null;
     }
   }
-
 
   async createCarouselImage(formData) {
     try {
@@ -68,11 +85,9 @@ class CarouselService {
       }
       return result;
     } catch (error) {
-      console.error('Erreur lors de la création de l\'image de carrousel:', error);
       throw error;
     }
   }
-
 
   async updateCarouselImage(id, formData) {
     try {
@@ -94,18 +109,15 @@ class CarouselService {
       }
       return result;
     } catch (error) {
-      console.error(`Erreur lors de la mise à jour de l'image ${id}:`, error);
       throw error;
     }
   }
-
 
   async deleteCarouselImage(id) {
     try {
       await apiService.delete(`/auth/carousel/${id}/`);
       return true;
     } catch (error) {
-      console.error(`Erreur lors de la suppression de l'image ${id}:`, error);
       throw error;
     }
   }
@@ -115,7 +127,6 @@ class CarouselService {
       const response = await apiService.get('/auth/carousel/');
       return response && response.status === 'success';
     } catch (error) {
-      console.error('Erreur de santé de l\'API carrousel:', error);
       return false;
     }
   }

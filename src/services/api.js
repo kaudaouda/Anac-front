@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
 
 class ApiService {
   constructor() {
@@ -13,7 +13,9 @@ class ApiService {
       '/auth/password-reset/',
       '/auth/refresh-token/',
       '/auth/check-auth/',
-      '/auth/carousel/'
+      '/auth/carousel/',
+      '/auth/airports/map/',
+      '/auth/protected-areas/map/'
     ];
   }
 
@@ -45,14 +47,7 @@ class ApiService {
     }
 
     try {
-      console.log(`Request API: ${options.method || 'GET'} ${url}`);
-      if (options.body) {
-        console.log('Data sent:', JSON.parse(options.body));
-      }
-      
       const response = await fetch(url, config);
-      
-      console.log(`Response API: ${response.status} ${response.statusText}`);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -63,22 +58,13 @@ class ApiService {
         error.statusText = response.statusText;
         error.data = errorData;
         
-        console.error(' Erreur API:', {
-          status: response.status,
-          statusText: response.statusText,
-          url: url,
-          errorData: errorData
-        });
-        
         throw error;
       }
 
       const responseData = await response.json();
-      console.log('Data received:', responseData);
       return responseData;
       
     } catch (error) {
-      console.error('Error during API request:', error);
       throw error;
     }
   }

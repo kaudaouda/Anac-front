@@ -1,5 +1,5 @@
 // Configuration pour l'application ANAC
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
 /**
  * Construit l'URL complète d'une image à partir de l'URL relative
