@@ -139,7 +139,6 @@ const ZoomAwareCircles = ({ airports, aerodromes }) => {
 };
 
 const DroneMap = ({ airports, aerodromes, naturalReserves, nationalParks }) => {
-
   
   return (
     <MapContainer
