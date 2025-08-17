@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Circle, Tooltip, Polygon, Polyline, useMap } f
 import 'leaflet/dist/leaflet.css';
 import '../Map.css';
 import L from 'leaflet';
+import DrawingOverlay from './DrawingOverlay';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -138,7 +139,7 @@ const ZoomAwareCircles = ({ airports, aerodromes }) => {
   );
 };
 
-const DroneMap = ({ airports, aerodromes, naturalReserves, nationalParks }) => {
+const DroneMap = ({ airports, aerodromes, naturalReserves, nationalParks, drawingCoordinates, isDrawing }) => {
   
   return (
     <MapContainer
@@ -235,6 +236,12 @@ const DroneMap = ({ airports, aerodromes, naturalReserves, nationalParks }) => {
           />
         </React.Fragment>
       ))}
+
+      {/* Aperçu du dessin en cours */}
+      <DrawingOverlay 
+        coordinates={drawingCoordinates} 
+        isDrawing={isDrawing} 
+      />
     </MapContainer>
   );
 };

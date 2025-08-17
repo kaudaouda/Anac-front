@@ -81,7 +81,7 @@ const Menu = () => {
 
                 {/* Menu déroulant */}
                 <div 
-                  className={`absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-200 ${
+                  className={`absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-[999] transition-all duration-200 ${
                     isProfileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
                   }`}
                   onMouseEnter={() => setIsProfileMenuOpen(true)}

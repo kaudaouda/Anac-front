@@ -2,8 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { DroneMapHeader, DroneMap } from '../components/drone-map';
 import { airportService } from '../services/airportService';
 import { protectedAreasService } from '../services/protectedAreasService';
+import AddNaturalReserveForm from '../components/forms/AddNaturalReserveForm';
+import AddNationalParkForm from '../components/forms/AddNationalParkForm';
+import SuccessNotification from '../components/ui/SuccessNotification';
+import { useAuth } from '../contexts/AuthContext';
+import { 
+  Add as AddIcon, 
+  Park as ParkIcon 
+} from '@mui/icons-material';
 
 const DroneMapPage = () => {
+  const { user } = useAuth();
   const [airports, setAirports] = useState([]);
   const [aerodromes, setAerodromes] = useState([]);
   const [naturalReserves, setNaturalReserves] = useState([]);
@@ -11,55 +20,106 @@ const DroneMapPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataSource, setDataSource] = useState('api');
+  const [showAddReserveForm, setShowAddReserveForm] = useState(false);
+  const [showAddParkForm, setShowAddParkForm] = useState(false);
+  const [drawingCoordinates, setDrawingCoordinates] = useState([]);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [notification, setNotification] = useState({
+    isVisible: false,
+    message: '',
+    type: 'success'
+  });
 
   useEffect(() => {
-    const loadMapData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        const [airportsData, protectedAreasData] = await Promise.all([
-          airportService.getAirportsWithFallback(),
-          protectedAreasService.getProtectedAreasWithFallback()
-        ]);
-        
-        if (airportsData.airports || airportsData.aerodromes) {
-          setAirports(airportsData.airports || []);
-          setAerodromes(airportsData.aerodromes || []);
-          setDataSource('api');
-        } else {
-          setAirports([]);
-          setAerodromes([]);
-          setDataSource('local');
-          setError('Aucune donnée d\'aéroport disponible');
-        }
-        
-        if (protectedAreasData.natural_reserves || protectedAreasData.national_parks) {
-          setNaturalReserves(protectedAreasData.natural_reserves || []);
-          setNationalParks(protectedAreasData.national_parks || []);
-        } else {
-          setNaturalReserves([]);
-          setNationalParks([]);
-        }
-        
-      } catch (err) {
-        setError('Erreur lors du chargement des données de la carte');
-        
-        setAirports([]);
-        setAerodromes([]);
-        setNaturalReserves([]);
-        setNationalParks([]);
-        setDataSource('local');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadMapData();
   }, []);
 
   const hasData = airports.length > 0 || aerodromes.length > 0 || 
                   naturalReserves.length > 0 || nationalParks.length > 0;
+
+  const handleReserveSuccess = (data) => {
+    // Recharger les données après ajout
+    loadMapData();
+    // Afficher la notification de succès
+    setNotification({
+      isVisible: true,
+      message: `Réserve naturelle "${data.reserve.name}" ajoutée avec succès ! En attente d'approbation admin.`,
+      type: 'success'
+    });
+  };
+
+  const handleParkSuccess = (data) => {
+    // Recharger les données après ajout
+    loadMapData();
+    // Afficher la notification de succès
+    setNotification({
+      isVisible: true,
+      message: `Parc national "${data.park.name}" ajouté avec succès ! En attente d'approbation admin.`,
+      type: 'success'
+    });
+  };
+
+  const handleDrawingStart = () => {
+    setIsDrawing(true);
+    setDrawingCoordinates([]);
+  };
+
+  const handleDrawingStop = () => {
+    setIsDrawing(false);
+    setDrawingCoordinates([]);
+  };
+
+  const handleCoordinateAdd = (lat, lng) => {
+    if (isDrawing) {
+      setDrawingCoordinates(prev => [...prev, [lat, lng]]);
+    }
+  };
+
+  const closeNotification = () => {
+    setNotification(prev => ({ ...prev, isVisible: false }));
+  };
+
+  const loadMapData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const [airportsData, protectedAreasData] = await Promise.all([
+        airportService.getAirportsWithFallback(),
+        protectedAreasService.getProtectedAreasWithFallback()
+      ]);
+      
+      if (airportsData.airports || airportsData.aerodromes) {
+        setAirports(airportsData.airports || []);
+        setAerodromes(airportsData.aerodromes || []);
+        setDataSource('api');
+      } else {
+        setAirports([]);
+        setAerodromes([]);
+        setDataSource('local');
+        setError('Aucune donnée d\'aéroport disponible');
+      }
+      
+      if (protectedAreasData.natural_reserves || protectedAreasData.national_parks) {
+        setNaturalReserves(protectedAreasData.natural_reserves || []);
+        setNationalParks(protectedAreasData.national_parks || []);
+      } else {
+        setNaturalReserves([]);
+        setNationalParks([]);
+      }
+      
+    } catch (err) {
+      setError('Erreur lors du chargement des données de la carte');
+      
+      setAirports([]);
+      setAerodromes([]);
+      setNaturalReserves([]);
+      setNationalParks([]);
+      setDataSource('local');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -91,15 +151,65 @@ const DroneMapPage = () => {
           </div>
         )}
 
+        {/* Boutons d'ajout pour utilisateurs connectés */}
+        {user && (
+          <div className="mb-6 flex flex-wrap gap-4">
+            <button
+              onClick={() => setShowAddReserveForm(true)}
+              className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+            >
+              <AddIcon className="w-4 h-4 mr-2" /> Ajouter une réserve naturelle
+            </button>
+            <button
+              onClick={() => setShowAddParkForm(true)}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              <ParkIcon className="w-4 h-4 mr-2" /> Ajouter un parc national
+            </button>
+          </div>
+        )}
+
         <div className="w-full">
           <DroneMap
             airports={airports}
             aerodromes={aerodromes}
             naturalReserves={naturalReserves}
             nationalParks={nationalParks}
+            drawingCoordinates={drawingCoordinates}
+            isDrawing={isDrawing}
           />
         </div>
       </div>
+
+      {/* Formulaires modaux */}
+      {showAddReserveForm && (
+        <AddNaturalReserveForm
+          onClose={() => setShowAddReserveForm(false)}
+          onSuccess={handleReserveSuccess}
+          onDrawingStart={handleDrawingStart}
+          onDrawingStop={handleDrawingStop}
+          onCoordinateAdd={handleCoordinateAdd}
+        />
+      )}
+
+      {showAddParkForm && (
+        <AddNationalParkForm
+          onClose={() => setShowAddParkForm(false)}
+          onSuccess={handleParkSuccess}
+          onDrawingStart={handleDrawingStart}
+          onDrawingStop={handleDrawingStop}
+          onCoordinateAdd={handleCoordinateAdd}
+        />
+      )}
+
+      {/* Notification de succès */}
+      <SuccessNotification
+        isVisible={notification.isVisible}
+        message={notification.message}
+        type={notification.type}
+        onClose={closeNotification}
+        autoHideDuration={6000}
+      />
     </div>
   );
 };
