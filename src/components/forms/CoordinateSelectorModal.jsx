@@ -8,7 +8,16 @@ import {
   MyLocation as LocationIcon
 } from '@mui/icons-material';
 
-const CoordinateSelectorModal = ({ onCoordinatesSelected, onClose }) => {
+const CoordinateSelectorModal = ({ 
+  onCoordinatesSelected, 
+  onClose, 
+  onCoordinateSelect,
+  onDrawingStart,
+  onDrawingStop,
+  onCoordinateAdd,
+  isSinglePoint = false,
+  maxCoordinates = null
+}) => {
   const [coordinates, setCoordinates] = useState([]);
   const [currentLat, setCurrentLat] = useState('');
   const [currentLng, setCurrentLng] = useState('');
@@ -33,6 +42,12 @@ const CoordinateSelectorModal = ({ onCoordinatesSelected, onClose }) => {
         return;
       }
       
+      // Vérifier la limite de coordonnées
+      if (maxCoordinates && coordinates.length >= maxCoordinates) {
+        alert(`Vous ne pouvez ajouter que ${maxCoordinates} coordonnée${maxCoordinates > 1 ? 's' : ''}`);
+        return;
+      }
+      
       setCoordinates(prev => [...prev, [lat, lng]]);
       setCurrentLat('');
       setCurrentLng('');
@@ -48,12 +63,20 @@ const CoordinateSelectorModal = ({ onCoordinatesSelected, onClose }) => {
   };
 
   const finishSelection = () => {
-    if (coordinates.length >= 3) {
-      // Fermer le polygone en ajoutant le premier point à la fin
-      const closedCoordinates = [...coordinates, coordinates[0]];
-      onCoordinatesSelected(closedCoordinates);
+    if (maxCoordinates === 1 || isSinglePoint) {
+      if (coordinates.length === 1) {
+        onCoordinateSelect(coordinates[0][0], coordinates[0][1]);
+      } else {
+        alert('Veuillez ajouter exactement 1 coordonnée pour un point');
+      }
     } else {
-      alert('Veuillez ajouter au moins 3 coordonnées pour former un polygone');
+      if (coordinates.length >= 3) {
+        // Fermer le polygone en ajoutant le premier point à la fin
+        const closedCoordinates = [...coordinates, coordinates[0]];
+        onCoordinatesSelected(closedCoordinates);
+      } else {
+        alert('Veuillez ajouter au moins 3 coordonnées pour former un polygone');
+      }
     }
   };
 
@@ -64,63 +87,81 @@ const CoordinateSelectorModal = ({ onCoordinatesSelected, onClose }) => {
   };
 
   return (
-    <div className="coordinate-selector-modal-overlay">
-      <div className="coordinate-selector-modal">
-        <div className="modal-header">
-          <h3><LocationIcon className="header-icon" /> Sélection des coordonnées</h3>
-          <button onClick={onClose} className="close-btn">
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-[9999] p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative mx-2 sm:mx-0">
+        <div className="flex items-center justify-between p-4 sm:p-6 pb-0 border-b border-gray-200 mb-6">
+          <h3 className="text-2xl font-semibold text-gray-900 flex items-center gap-2 m-0">
+            <LocationIcon className="text-blue-600" /> {isSinglePoint ? 'Sélectionner un point' : 'Sélectionner des coordonnées'}
+          </h3>
+          <button 
+            onClick={onClose} 
+            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-all duration-200"
+          >
             <CloseIcon />
           </button>
         </div>
 
-        <div className="modal-content">
-          <div className="coordinate-input-section">
-            <h4>Ajouter une coordonnée</h4>
-            <div className="coordinate-inputs">
-              <div className="input-group">
-                <label htmlFor="latitude">Latitude (-90 à 90)</label>
-                <input
-                  type="number"
-                  id="latitude"
-                  value={currentLat}
-                  onChange={(e) => setCurrentLat(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="5.123456"
-                  step="any"
-                  min="-90"
-                  max="90"
-                />
-              </div>
-              <div className="input-group">
-                <label htmlFor="longitude">Longitude (-180 à 180)</label>
-                <input
-                  type="number"
-                  id="longitude"
-                  value={currentLng}
-                  onChange={(e) => setCurrentLng(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="-4.123456"
-                  step="any"
-                  min="-180"
-                  max="180"
-                />
+        <div className="px-4 sm:px-6 pb-6">
+          <div className="mb-6">
+            <h4 className="text-lg font-medium text-gray-700 mb-4">{isSinglePoint ? 'Ajouter un point' : 'Ajouter une coordonnée'}</h4>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="latitude" className="block mb-2 text-sm font-medium text-gray-700">
+                    Latitude (-90 à 90)
+                  </label>
+                  <input
+                    type="number"
+                    id="latitude"
+                    value={currentLat}
+                    onChange={(e) => setCurrentLat(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="5.123456"
+                    step="any"
+                    min="-90"
+                    max="90"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="longitude" className="block mb-2 text-sm font-medium text-gray-700">
+                    Longitude (-180 à 180)
+                  </label>
+                  <input
+                    type="number"
+                    id="longitude"
+                    value={currentLng}
+                    onChange={(e) => setCurrentLng(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="-4.123456"
+                    step="any"
+                    min="-180"
+                    max="180"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                </div>
               </div>
               <button 
                 onClick={addCoordinate}
-                className="add-coordinate-btn"
-                disabled={!currentLat || !currentLng}
+                className="w-full sm:w-auto px-5 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={!currentLat || !currentLng || (maxCoordinates && coordinates.length >= maxCoordinates)}
               >
                 <AddIcon /> Ajouter
+                {maxCoordinates && (
+                  <span className="text-xs">
+                    ({coordinates.length}/{maxCoordinates})
+                  </span>
+                )}
               </button>
             </div>
           </div>
 
-          <div className="coordinates-list-section">
-            <div className="coordinates-header">
-              <h4>Coordonnées sélectionnées ({coordinates.length})</h4>
+          <div className="mb-6">
+            <h4 className="text-lg font-medium text-gray-700 mb-4">Coordonnées sélectionnées ({coordinates.length})</h4>
+            <div className="flex justify-end mb-4">
               <button 
                 onClick={clearAll}
-                className="clear-all-btn"
+                className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 disabled={coordinates.length === 0}
               >
                 <ClearIcon /> Tout effacer
@@ -128,20 +169,32 @@ const CoordinateSelectorModal = ({ onCoordinatesSelected, onClose }) => {
             </div>
             
             {coordinates.length === 0 ? (
-              <div className="no-coordinates">
-                <p>Aucune coordonnée ajoutée</p>
-                <p className="hint">Ajoutez au moins 3 coordonnées pour former un polygone</p>
+              <div className="text-center text-gray-500 py-8">
+                <p className="mb-2">Aucune coordonnée ajoutée</p>
+                <p className="text-sm">
+                  {maxCoordinates === 1 
+                    ? 'Ajoutez exactement 1 coordonnée pour un point' 
+                    : isSinglePoint 
+                      ? 'Ajoutez exactement 1 coordonnée pour un point'
+                      : 'Ajoutez au moins 3 coordonnées pour former un polygone'
+                  }
+                </p>
               </div>
             ) : (
-              <div className="coordinates-grid">
+              <div className="space-y-2">
                 {coordinates.map((coord, index) => (
-                  <div key={index} className="coordinate-item">
-                    <span className="coordinate-index">{index + 1}</span>
-                    <span className="coordinate-lat">{coord[0].toFixed(6)}</span>
-                    <span className="coordinate-lng">{coord[1].toFixed(6)}</span>
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center gap-4">
+                      <span className="w-6 h-6 bg-blue-500 text-white text-xs font-medium rounded-full flex items-center justify-center">
+                        {index + 1}
+                      </span>
+                      <span className="text-sm font-mono text-gray-700">
+                        {coord[0].toFixed(6)}, {coord[1].toFixed(6)}
+                      </span>
+                    </div>
                     <button 
                       onClick={() => removeCoordinate(index)}
-                      className="remove-coordinate-btn"
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                       title="Supprimer cette coordonnée"
                     >
                       <DeleteIcon />
@@ -152,309 +205,31 @@ const CoordinateSelectorModal = ({ onCoordinatesSelected, onClose }) => {
             )}
           </div>
 
-          <div className="modal-actions">
+          <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6 pt-5 border-t border-gray-200">
             <button 
               onClick={onClose}
-              className="btn btn-secondary"
+              className="px-5 py-3 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
             >
-              Annuler
+              <CloseIcon /> Annuler
             </button>
             <button 
               onClick={finishSelection}
-              className="btn btn-primary"
-              disabled={coordinates.length < 3}
+              className="px-5 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+              disabled={
+                maxCoordinates === 1 
+                  ? coordinates.length !== 1 
+                  : isSinglePoint 
+                    ? coordinates.length !== 1 
+                    : coordinates.length < 3
+              }
             >
-              <CheckIcon /> Terminer ({coordinates.length} points)
+              <CheckIcon /> Terminer ({coordinates.length} {maxCoordinates === 1 ? 'point' : isSinglePoint ? 'point' : 'points'})
             </button>
           </div>
         </div>
       </div>
 
-      <style>{`
-        .coordinate-selector-modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 20px;
-        }
 
-        .coordinate-selector-modal {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-          max-width: 700px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-        }
-
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px 24px;
-          border-bottom: 1px solid #e9ecef;
-        }
-
-        .modal-header h3 {
-          margin: 0;
-          color: #2c3e50;
-          font-size: 20px;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .header-icon {
-          color: #007bff;
-        }
-
-        .close-btn {
-          background: none;
-          border: none;
-          font-size: 24px;
-          color: #6c757d;
-          cursor: pointer;
-          padding: 0;
-          width: 32px;
-          height: 32px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          transition: all 0.2s;
-        }
-
-        .close-btn:hover {
-          background: #f8f9fa;
-          color: #495057;
-        }
-
-        .modal-content {
-          padding: 24px;
-        }
-
-        .coordinate-input-section {
-          margin-bottom: 24px;
-          padding: 20px;
-          background: #f8f9fa;
-          border-radius: 8px;
-        }
-
-        .coordinate-input-section h4 {
-          margin: 0 0 16px 0;
-          color: #495057;
-          font-size: 16px;
-          font-weight: 600;
-        }
-
-        .coordinate-inputs {
-          display: grid;
-          grid-template-columns: 1fr 1fr auto;
-          gap: 16px;
-          align-items: end;
-        }
-
-        .input-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .input-group label {
-          margin-bottom: 8px;
-          color: #495057;
-          font-weight: 500;
-          font-size: 14px;
-        }
-
-        .input-group input {
-          padding: 12px;
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          font-size: 14px;
-          transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-          outline: none;
-          border-color: #007bff;
-        }
-
-        .add-coordinate-btn {
-          padding: 12px 20px;
-          background: #28a745;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background 0.2s;
-          white-space: nowrap;
-        }
-
-        .add-coordinate-btn:hover:not(:disabled) {
-          background: #1e7e34;
-        }
-
-        .add-coordinate-btn:disabled {
-          background: #6c757d;
-          cursor: not-allowed;
-        }
-
-        .coordinates-list-section {
-          margin-bottom: 24px;
-        }
-
-        .coordinates-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 16px;
-        }
-
-        .coordinates-header h4 {
-          margin: 0;
-          color: #495057;
-          font-size: 16px;
-          font-weight: 600;
-        }
-
-        .clear-all-btn {
-          padding: 8px 16px;
-          background: #dc3545;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          font-size: 12px;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-
-        .clear-all-btn:hover:not(:disabled) {
-          background: #c82333;
-        }
-
-        .clear-all-btn:disabled {
-          background: #6c757d;
-          cursor: not-allowed;
-        }
-
-        .no-coordinates {
-          text-align: center;
-          padding: 40px 20px;
-          color: #6c757d;
-        }
-
-        .no-coordinates p {
-          margin: 8px 0;
-        }
-
-        .hint {
-          font-size: 14px;
-          color: #adb5bd;
-        }
-
-        .coordinates-grid {
-          max-height: 300px;
-          overflow-y: auto;
-          border: 1px solid #dee2e6;
-          border-radius: 8px;
-        }
-
-        .coordinate-item {
-          display: grid;
-          grid-template-columns: 50px 1fr 1fr 60px;
-          gap: 12px;
-          padding: 12px 16px;
-          border-bottom: 1px solid #f1f3f4;
-          align-items: center;
-        }
-
-        .coordinate-item:last-child {
-          border-bottom: none;
-        }
-
-        .coordinate-index {
-          background: #007bff;
-          color: white;
-          padding: 4px 8px;
-          border-radius: 4px;
-          text-align: center;
-          font-weight: 600;
-          font-size: 12px;
-        }
-
-        .coordinate-lat,
-        .coordinate-lng {
-          color: #495057;
-          font-family: monospace;
-          font-size: 14px;
-        }
-
-        .remove-coordinate-btn {
-          background: none;
-          border: none;
-          color: #dc3545;
-          cursor: pointer;
-          padding: 4px;
-          border-radius: 4px;
-          transition: background 0.2s;
-        }
-
-        .remove-coordinate-btn:hover {
-          background: #f8d7da;
-        }
-
-        .modal-actions {
-          display: flex;
-          gap: 12px;
-          justify-content: flex-end;
-          padding-top: 20px;
-          border-top: 1px solid #e9ecef;
-        }
-
-        .btn {
-          padding: 12px 24px;
-          border: none;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .btn-primary {
-          background: #007bff;
-          color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          background: #0056b3;
-        }
-
-        .btn-secondary {
-          background: #6c757d;
-          color: white;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #545b62;
-        }
-      `}</style>
     </div>
   );
 };
