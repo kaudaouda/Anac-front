@@ -12,7 +12,7 @@ import {
   Map as MapIcon
 } from '@mui/icons-material';
 
-const AddNationalParkForm = ({ onClose, onSuccess }) => {
+const AddNationalParkForm = ({ onClose, onSuccess, onDrawingStart, onDrawingStop, onCoordinateAdd }) => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     park_id: '',
@@ -87,24 +87,36 @@ const AddNationalParkForm = ({ onClose, onSuccess }) => {
     const random = Math.random().toString(36).substr(2, 5);
     setFormData(prev => ({
       ...prev,
-      park_id: `parc-${timestamp}-${random}`
+      park_id: `park-${timestamp}-${random}`
     }));
   };
 
+  const handleMapClick = () => {
+    if (onDrawingStart) onDrawingStart();
+    setShowCoordinateSelector(true);
+  };
+
   return (
-    <div className="add-park-form-overlay">
-      <div className="add-park-form-modal">
-        <div className="form-header">
-          <h2><AddIcon className="header-icon" /> Ajouter un parc national</h2>
-          <button onClick={onClose} className="close-btn">
+    <div className="fixed inset-0 bg-opacity-30 flex items-center justify-center z-[9999] p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative mx-2 sm:mx-0">
+        <div className="flex items-center justify-between p-4 sm:p-6 pb-0 border-b border-gray-200 mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900 flex items-center gap-2 m-0">
+            <AddIcon className="text-blue-600" /> Ajouter un parc national
+          </h2>
+          <button 
+            onClick={onClose} 
+            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-all duration-200"
+          >
             <CloseIcon />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="add-park-form">
-          <div className="form-group">
-            <label htmlFor="park_id">Identifiant unique *</label>
-            <div className="input-with-button">
+        <form onSubmit={handleSubmit} className="px-4 sm:px-6 pb-6">
+          <div className="mb-5">
+            <label htmlFor="park_id" className="block mb-2 text-sm font-medium text-gray-700">
+              Identifiant unique *
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 id="park_id"
@@ -112,20 +124,23 @@ const AddNationalParkForm = ({ onClose, onSuccess }) => {
                 value={formData.park_id}
                 onChange={handleInputChange}
                 required
-                placeholder="parc-azagny"
+                placeholder="park-comoe"
+                className="flex-1 px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               />
               <button 
                 type="button" 
                 onClick={generateParkId}
-                className="generate-btn"
+                className="px-4 py-3 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
               >
                 <RefreshIcon /> Générer
               </button>
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="name">Nom du parc *</label>
+          <div className="mb-5">
+            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-700">
+              Nom du parc national *
+            </label>
             <input
               type="text"
               id="name"
@@ -134,11 +149,14 @@ const AddNationalParkForm = ({ onClose, onSuccess }) => {
               onChange={handleInputChange}
               required
               placeholder="Parc National de..."
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="area">Superficie *</label>
+          <div className="mb-5">
+            <label htmlFor="area" className="block mb-2 text-sm font-medium text-gray-700">
+              Superficie *
+            </label>
             <input
               type="text"
               id="area"
@@ -146,12 +164,15 @@ const AddNationalParkForm = ({ onClose, onSuccess }) => {
               value={formData.area}
               onChange={handleInputChange}
               required
-              placeholder="194 km²"
+              placeholder="1,150 km²"
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="description">Description</label>
+          <div className="mb-5">
+            <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-700">
+              Description
+            </label>
             <textarea
               id="description"
               name="description"
@@ -159,70 +180,85 @@ const AddNationalParkForm = ({ onClose, onSuccess }) => {
               onChange={handleInputChange}
               rows="3"
               placeholder="Description du parc national..."
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
             />
           </div>
 
-          <div className="form-group">
-            <label>Coordonnées GPS *</label>
-            <div className="coordinates-section">
+          <div className="mb-5">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Coordonnées GPS *
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
               {coordinates.length > 0 ? (
-                <div className="coordinates-display">
-                  <div className="coordinates-header">
-                    <span>Polygone avec {coordinates.length} points</span>
+                <div className="bg-white rounded-lg p-3 border border-gray-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium text-gray-700">Polygone avec {coordinates.length} points</span>
                     <button 
                       type="button"
                       onClick={() => setShowCoordinateSelector(true)}
-                      className="edit-coordinates-btn"
+                      className="px-3 py-1.5 bg-blue-500 text-white text-xs font-medium rounded-md hover:bg-blue-600 transition-colors flex items-center gap-1"
                     >
                       <EditIcon /> Modifier
                     </button>
                   </div>
-                  <div className="coordinates-preview">
+                  <div className="flex flex-wrap gap-2 text-sm text-gray-500">
                     {coordinates.slice(0, 3).map((coord, index) => (
-                      <span key={index} className="coordinate-preview">
+                      <span key={index} className="px-2 py-1 bg-gray-100 rounded text-xs">
                         {coord[0].toFixed(4)}, {coord[1].toFixed(4)}
                       </span>
                     ))}
                     {coordinates.length > 3 && (
-                      <span className="more-coordinates">
+                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
                         +{coordinates.length - 3} autres...
                       </span>
                     )}
                   </div>
                 </div>
               ) : (
-                <button 
-                  type="button"
-                  onClick={() => setShowCoordinateSelector(true)}
-                  className="select-coordinates-btn"
-                >
-                  <MapIcon /> Sélectionner sur la carte
-                </button>
+                <div className="text-center text-gray-500">
+                  <p className="mb-3">Aucune coordonnée sélectionnée</p>
+                  <button 
+                    type="button"
+                    onClick={handleMapClick}
+                    className="px-5 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+                  >
+                    <MapIcon /> Sélectionner sur la carte
+                  </button>
+                </div>
               )}
             </div>
           </div>
 
           {error && (
-            <div className="error-message">
-              ❌ {error}
+            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-3 rounded-lg mb-5 text-sm">
+              <span>❌ {error}</span>
             </div>
           )}
 
-          <div className="form-actions">
+          <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6 pt-5 border-t border-gray-200">
             <button 
               type="button" 
               onClick={onClose}
-              className="btn btn-secondary"
+              className="px-5 py-3 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
               disabled={isSubmitting}
             >
-              Annuler
+              <CloseIcon /> Annuler
             </button>
             <button 
               type="submit" 
-              className="btn btn-primary"
+              className="px-5 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               disabled={isSubmitting || coordinates.length < 3}
             >
-              {isSubmitting ? '⏳ Création...' : <><CheckIcon /> Créer le parc national</>}
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Création...
+                </>
+              ) : (
+                <>
+                  <CheckIcon /> Créer le parc national
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -231,265 +267,14 @@ const AddNationalParkForm = ({ onClose, onSuccess }) => {
           <CoordinateSelectorModal
             onCoordinatesSelected={handleCoordinatesSelected}
             onClose={() => setShowCoordinateSelector(false)}
+            onDrawingStart={onDrawingStart}
+            onDrawingStop={onDrawingStop}
+            onCoordinateAdd={onCoordinateAdd}
+            isSinglePoint={false}
+            maxCoordinates={null}
           />
         )}
       </div>
-
-      <style>{`
-        .add-park-form-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 20px;
-        }
-
-        .add-park-form-modal {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-          max-width: 600px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-        }
-
-        .form-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px 24px;
-          border-bottom: 1px solid #e9ecef;
-        }
-
-        .form-header h2 {
-          margin: 0;
-          color: #2c3e50;
-          font-size: 24px;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .header-icon {
-          color: #007bff;
-        }
-
-        .close-btn {
-          background: none;
-          border: none;
-          font-size: 28px;
-          color: #6c757d;
-          cursor: pointer;
-          padding: 0;
-          width: 32px;
-          height: 32px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          transition: all 0.2s;
-        }
-
-        .close-btn:hover {
-          background: #f8f9fa;
-          color: #495057;
-        }
-
-        .add-park-form {
-          padding: 24px;
-        }
-
-        .form-group {
-          margin-bottom: 20px;
-        }
-
-        .form-group label {
-          display: block;
-          margin-bottom: 8px;
-          color: #495057;
-          font-weight: 500;
-          font-size: 14px;
-        }
-
-        .form-group input,
-        .form-group textarea {
-          width: 100%;
-          padding: 12px;
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          font-size: 14px;
-          transition: border-color 0.2s;
-          box-sizing: border-box;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-          outline: none;
-          border-color: #007bff;
-        }
-
-        .input-with-button {
-          display: flex;
-          gap: 10px;
-        }
-
-        .input-with-button input {
-          flex: 1;
-        }
-
-        .generate-btn {
-          padding: 12px 16px;
-          background: #6f42c1;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 14px;
-          cursor: pointer;
-          transition: background 0.2s;
-          white-space: nowrap;
-        }
-
-        .generate-btn:hover {
-          background: #5a32a3;
-        }
-
-        .coordinates-section {
-          margin-top: 10px;
-        }
-
-        .select-coordinates-btn {
-          width: 100%;
-          padding: 16px;
-          background: #28a745;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-
-        .select-coordinates-btn:hover {
-          background: #1e7e34;
-        }
-
-        .coordinates-display {
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          padding: 16px;
-          background: #f8f9fa;
-        }
-
-        .coordinates-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 12px;
-        }
-
-        .coordinates-header span {
-          font-weight: 500;
-          color: #495057;
-        }
-
-        .edit-coordinates-btn {
-          padding: 8px 12px;
-          background: #007bff;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          font-size: 12px;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-
-        .edit-coordinates-btn:hover {
-          background: #0056b3;
-        }
-
-        .coordinates-preview {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-
-        .coordinate-preview {
-          background: white;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-family: monospace;
-          color: #6c757d;
-          border: 1px solid #dee2e6;
-        }
-
-        .more-coordinates {
-          background: #e9ecef;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          color: #6c757d;
-        }
-
-        .error-message {
-          background: #f8d7da;
-          color: #721c24;
-          padding: 12px;
-          border-radius: 8px;
-          margin-bottom: 20px;
-          border: 1px solid #f5c6cb;
-        }
-
-        .form-actions {
-          display: flex;
-          gap: 12px;
-          justify-content: flex-end;
-          margin-top: 24px;
-          padding-top: 20px;
-          border-top: 1px solid #e9ecef;
-        }
-
-        .btn {
-          padding: 12px 24px;
-          border: none;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .btn-primary {
-          background: #007bff;
-          color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          background: #0056b3;
-        }
-
-        .btn-secondary {
-          background: #6c757d;
-          color: white;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #545b62;
-        }
-      `}</style>
     </div>
   );
 };

@@ -1,10 +1,9 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL;
   }
-
 
   get publicEndpoints() {
     return [
@@ -12,13 +11,11 @@ class ApiService {
       '/auth/register/',
       '/auth/password-reset/',
       '/auth/refresh-token/',
-      '/auth/check-auth/',
       '/auth/carousel/',
       '/auth/airports/map/',
       '/auth/protected-areas/map/'
     ];
   }
-
 
   isPublicEndpoint(endpoint) {
     return this.publicEndpoints.some(publicEndpoint => 
@@ -26,7 +23,7 @@ class ApiService {
     );
   }
 
-  // generic method for http calls
+  // Méthode générique pour les appels HTTP
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     
@@ -35,19 +32,28 @@ class ApiService {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+      credentials: 'include', // Important pour inclure les cookies
       ...options,
     };
 
-    // add authentication token only if endpoint is not public
-    if (!this.isPublicEndpoint(endpoint)) {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-
     try {
       const response = await fetch(url, config);
+      
+      // Gérer les erreurs d'authentification
+      if (response.status === 401) {
+        // Essayer de rafraîchir le token automatiquement
+        if (!this.isPublicEndpoint(endpoint)) {
+          try {
+            await this.refreshToken();
+            // Réessayer la requête originale
+            return this.request(endpoint, options);
+          } catch (refreshError) {
+            // Rediriger vers la page de connexion si le refresh échoue
+            this.handleAuthError();
+            throw new Error('Session expirée. Veuillez vous reconnecter.');
+          }
+        }
+      }
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -69,12 +75,44 @@ class ApiService {
     }
   }
 
-  // GET method
+  // Méthode pour rafraîchir le token
+  async refreshToken() {
+    try {
+      const response = await fetch(`${this.baseURL}/auth/refresh-token/`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Échec du rafraîchissement du token');
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Gérer les erreurs d'authentification
+  handleAuthError() {
+    // Supprimer le cookie d'authentification côté client
+    document.cookie = 'is_authenticated=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    
+    // Rediriger vers la page de connexion
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+  }
+
+  // Méthode GET
   async get(endpoint) {
     return this.request(endpoint, { method: 'GET' });
   }
 
-  // POST method
+  // Méthode POST
   async post(endpoint, data) {
     return this.request(endpoint, {
       method: 'POST',
@@ -82,7 +120,7 @@ class ApiService {
     });
   }
 
-  // PUT method
+  // Méthode PUT
   async put(endpoint, data) {
     return this.request(endpoint, {
       method: 'PUT',
@@ -90,7 +128,7 @@ class ApiService {
     });
   }
 
-  // PATCH method
+  // Méthode PATCH
   async patch(endpoint, data) {
     return this.request(endpoint, {
       method: 'PATCH',
@@ -98,6 +136,7 @@ class ApiService {
     });
   }
 
+  // Méthode DELETE
   async delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
   }

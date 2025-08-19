@@ -4,11 +4,13 @@ import { airportService } from '../services/airportService';
 import { protectedAreasService } from '../services/protectedAreasService';
 import AddNaturalReserveForm from '../components/forms/AddNaturalReserveForm';
 import AddNationalParkForm from '../components/forms/AddNationalParkForm';
+import AddAirportForm from '../components/forms/AddAirportForm';
 import SuccessNotification from '../components/ui/SuccessNotification';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   Add as AddIcon, 
-  Park as ParkIcon 
+  Park as ParkIcon,
+  Flight as FlightIcon
 } from '@mui/icons-material';
 
 const DroneMapPage = () => {
@@ -22,6 +24,7 @@ const DroneMapPage = () => {
   const [dataSource, setDataSource] = useState('api');
   const [showAddReserveForm, setShowAddReserveForm] = useState(false);
   const [showAddParkForm, setShowAddParkForm] = useState(false);
+  const [showAddAirportForm, setShowAddAirportForm] = useState(false);
   const [drawingCoordinates, setDrawingCoordinates] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [notification, setNotification] = useState({
@@ -38,23 +41,28 @@ const DroneMapPage = () => {
                   naturalReserves.length > 0 || nationalParks.length > 0;
 
   const handleReserveSuccess = (data) => {
-    // Recharger les données après ajout
     loadMapData();
-    // Afficher la notification de succès
     setNotification({
       isVisible: true,
-      message: `Réserve naturelle "${data.reserve.name}" ajoutée avec succès ! En attente d'approbation admin.`,
+      message: `Réserve naturelle "${data.reserve.name}" ajoutée avec succès ! En attente d'approbation des agents.`,
       type: 'success'
     });
   };
 
   const handleParkSuccess = (data) => {
-    // Recharger les données après ajout
     loadMapData();
-    // Afficher la notification de succès
     setNotification({
       isVisible: true,
-      message: `Parc national "${data.park.name}" ajouté avec succès ! En attente d'approbation admin.`,
+      message: `Parc national "${data.park.name}" ajouté avec succès ! En attente d'approbation des agents.`,
+      type: 'success'
+    });
+  };
+
+  const handleAirportSuccess = (data) => {
+    loadMapData();
+    setNotification({
+      isVisible: true,
+      message: `${data.airport.airport_type === 'international' ? 'Aéroport international' : data.airport.airport_type === 'domestic' ? 'Aéroport domestique' : 'Aérodrome'} "${data.airport.name}" ajouté avec succès ! En attente d'approbation admin.`,
       type: 'success'
     });
   };
@@ -145,15 +153,20 @@ const DroneMapPage = () => {
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
               <span className="text-sm">
-                Aucune donnée disponible. Vérifiez que le serveur Django est démarré et que les données sont chargées.
+                Aucune donnée disponible. veuillez patienter quelques instants.
               </span>
             </div>
           </div>
         )}
 
-        {/* Boutons d'ajout pour utilisateurs connectés */}
         {user && (
           <div className="mb-6 flex flex-wrap gap-4">
+            <button
+              onClick={() => setShowAddAirportForm(true)}
+              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+            >
+              <FlightIcon className="w-4 h-4 mr-2" /> Ajouter un aéroport/aérodrome
+            </button>
             <button
               onClick={() => setShowAddReserveForm(true)}
               className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
@@ -181,7 +194,16 @@ const DroneMapPage = () => {
         </div>
       </div>
 
-      {/* Formulaires modaux */}
+      {showAddAirportForm && (
+        <AddAirportForm
+          onClose={() => setShowAddAirportForm(false)}
+          onSuccess={handleAirportSuccess}
+          onDrawingStart={handleDrawingStart}
+          onDrawingStop={handleDrawingStop}
+          onCoordinateAdd={handleCoordinateAdd}
+        />
+      )}
+
       {showAddReserveForm && (
         <AddNaturalReserveForm
           onClose={() => setShowAddReserveForm(false)}
@@ -202,7 +224,6 @@ const DroneMapPage = () => {
         />
       )}
 
-      {/* Notification de succès */}
       <SuccessNotification
         isVisible={notification.isVisible}
         message={notification.message}

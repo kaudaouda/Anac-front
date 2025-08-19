@@ -65,7 +65,7 @@ const CoordinateSelector = ({ onCoordinatesSelected, isActive, onCancel }) => {
   return (
     <div className="coordinate-selector">
       <div className="coordinate-selector-panel">
-        <h3>🎯 Sélection des coordonnées</h3>
+        <h3>Sélection des coordonnées</h3>
         
         {!isDrawing ? (
           <div className="coordinate-selector-controls">
