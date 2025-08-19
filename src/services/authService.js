@@ -8,8 +8,9 @@ class AuthService {
 
   // Vérifier si l'utilisateur est connecté (version synchrone pour le constructeur)
   checkAuthStatusSync() {
-    const token = localStorage.getItem('accessToken');
-    return !!token && !this.isTokenExpired(token);
+    // Vérifier le cookie d'authentification
+    const isAuthCookie = this.getCookie('is_authenticated');
+    return isAuthCookie === 'true';
   }
 
   // Vérifier si l'utilisateur est connecté (version asynchrone pour l'API)
@@ -17,22 +18,11 @@ class AuthService {
     try {
       const response = await apiService.get('/auth/check-auth/');
       this.isAuthenticated = true;
-      this.setUser(response.user);
       return response;
     } catch (error) {
       this.isAuthenticated = false;
       this.clearAuth();
       throw error;
-    }
-  }
-
-  // Vérifier si le token est expiré
-  isTokenExpired(token) {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp * 1000 < Date.now();
-    } catch (error) {
-      return true;
     }
   }
 
@@ -45,16 +35,15 @@ class AuthService {
       
       console.log('✅ Inscription réussie:', response);
       
-      if (response.tokens) {
-        this.setTokens(response.tokens);
-        this.setUser(response.user);
+      if (response.success) {
         this.isAuthenticated = true;
+        // Les cookies sont automatiquement définis par le serveur
       }
       
       return response;
     } catch (error) {
-      console.error('❌ Erreur lors de l\'inscription:', error);
-      console.error('📊 Données envoyées:', userData);
+      console.error('Erreur lors de l\'inscription:', error);
+      console.error('Données envoyées:', userData);
       
       // Améliorer le message d'erreur pour l'utilisateur
       if (error.message.includes('400')) {
@@ -74,10 +63,9 @@ class AuthService {
     try {
       const response = await apiService.post('/auth/login/', credentials);
       
-      if (response.tokens) {
-        this.setTokens(response.tokens);
-        this.setUser(response.user);
+      if (response.success) {
         this.isAuthenticated = true;
+        // Les cookies sont automatiquement définis par le serveur
       }
       
       return response;
@@ -89,11 +77,7 @@ class AuthService {
   // Déconnexion utilisateur
   async logout() {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      
-      if (refreshToken) {
-        await apiService.post('/auth/logout/', { refresh_token: refreshToken });
-      }
+      await apiService.post('/auth/logout/');
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
@@ -104,20 +88,14 @@ class AuthService {
   // Rafraîchir le token d'accès
   async refreshToken() {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
+      const response = await apiService.post('/auth/refresh-token/');
       
-      if (!refreshToken) {
-        throw new Error('Aucun token de rafraîchissement disponible');
+      if (response.success) {
+        // Le cookie d'accès est automatiquement mis à jour par le serveur
+        return true;
       }
-
-      const response = await apiService.post('/auth/refresh-token/', {
-        refresh_token: refreshToken
-      });
-
-      if (response.access) {
-        localStorage.setItem('accessToken', response.access);
-        return response.access;
-      }
+      
+      return false;
     } catch (error) {
       console.error('Erreur lors du rafraîchissement du token:', error);
       this.clearAuth();
@@ -129,7 +107,6 @@ class AuthService {
   async getProfile() {
     try {
       const response = await apiService.get('/auth/profile/');
-      this.setUser(response);
       return response;
     } catch (error) {
       throw error;
@@ -140,7 +117,6 @@ class AuthService {
   async updateProfile(profileData) {
     try {
       const response = await apiService.patch('/auth/profile/', profileData);
-      this.setUser(response);
       return response;
     } catch (error) {
       throw error;
@@ -167,34 +143,50 @@ class AuthService {
     }
   }
 
-  // Stocker les tokens
-  setTokens(tokens) {
-    localStorage.setItem('accessToken', tokens.access);
-    localStorage.setItem('refreshToken', tokens.refresh);
-  }
-
-  // Stocker les informations utilisateur
-  setUser(user) {
-    localStorage.setItem('user', JSON.stringify(user));
-  }
-
-  // Récupérer les informations utilisateur
+  // Récupérer les informations utilisateur depuis le cookie
   getUser() {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  }
-
-  // Récupérer le token d'accès
-  getAccessToken() {
-    return localStorage.getItem('accessToken');
+    try {
+      // Essayer de récupérer les informations utilisateur depuis l'API
+      // car les cookies HttpOnly ne sont pas accessibles côté client
+      return null;
+    } catch (error) {
+      return null;
+    }
   }
 
   // Nettoyer l'authentification
   clearAuth() {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    // Supprimer le cookie d'authentification côté client
+    this.deleteCookie('is_authenticated');
     this.isAuthenticated = false;
+  }
+
+  // Utilitaires pour les cookies
+  getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  deleteCookie(name) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  }
+
+  // Vérifier si l'utilisateur est connecté
+  isUserAuthenticated() {
+    return this.isAuthenticated;
+  }
+
+  // Méthode pour forcer la vérification de l'authentification
+  async forceAuthCheck() {
+    try {
+      await this.checkAuthStatus();
+      return this.isAuthenticated;
+    } catch (error) {
+      this.isAuthenticated = false;
+      return false;
+    }
   }
 }
 

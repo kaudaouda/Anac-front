@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // check authentication on app load
+  // Vérifier l'authentification au chargement de l'app
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -27,17 +27,20 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true);
       setError(null);
       
+      // Vérifier d'abord le cookie côté client
       if (authService.isAuthenticated) {
-        const userData = authService.getUser();
-        if (userData) {
-          setUser(userData);
-          setIsAuthenticated(true);
-        } else {
-          // check with API
-          const response = await authService.checkAuth();
+        // Vérifier avec l'API pour obtenir les informations utilisateur
+        const response = await authService.checkAuthStatus();
+        if (response.success && response.user) {
           setUser(response.user);
           setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
         }
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
       }
     } catch (error) {
       console.error('Erreur lors de la vérification de l\'authentification:', error);
@@ -55,8 +58,12 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       
       const response = await authService.login(credentials);
-      setUser(response.user);
-      setIsAuthenticated(true);
+      
+      if (response.success) {
+        setUser(response.user);
+        setIsAuthenticated(true);
+        authService.isAuthenticated = true;
+      }
       
       return response;
     } catch (error) {
@@ -73,8 +80,12 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       
       const response = await authService.register(userData);
-      setUser(response.user);
-      setIsAuthenticated(true);
+      
+      if (response.success) {
+        setUser(response.user);
+        setIsAuthenticated(true);
+        authService.isAuthenticated = true;
+      }
       
       return response;
     } catch (error) {
@@ -94,6 +105,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       setIsAuthenticated(false);
+      authService.isAuthenticated = false;
       setIsLoading(false);
     }
   };
@@ -149,6 +161,19 @@ export const AuthProvider = ({ children }) => {
     setError(null);
   };
 
+  const refreshAuth = async () => {
+    try {
+      const isAuth = await authService.forceAuthCheck();
+      if (isAuth) {
+        await checkAuthStatus();
+      }
+      return isAuth;
+    } catch (error) {
+      console.error('Erreur lors du rafraîchissement de l\'authentification:', error);
+      return false;
+    }
+  };
+
   const value = {
     user,
     isAuthenticated,
@@ -162,6 +187,7 @@ export const AuthProvider = ({ children }) => {
     requestPasswordReset,
     clearError,
     checkAuthStatus,
+    refreshAuth,
   };
 
   return (
